@@ -4,17 +4,20 @@ services:
     container_name: hermes-telegram-agent
     restart: unless-stopped
 
+    # Allocate a pseudo-TTY so main-hermes does not exit with
+    # "Warning: Input is not a terminal (fd=0)" and take the whole container down.
+    # This keeps the container alive so you can run `hermes setup` from Dokploy terminal.
+    tty: true
+    stdin_open: true
+
     environment:
       - HERMES_UID=${HERMES_UID:-1000}
       - HERMES_GID=${HERMES_GID:-1000}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 
     volumes:
-      # Persistent storage: memories, sessions, skills
+      # Persistent storage: memories, sessions, skills, and config written by hermes setup
       - ./data:/opt/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
