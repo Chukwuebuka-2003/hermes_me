@@ -4,10 +4,6 @@ services:
     container_name: hermes-telegram-agent
     restart: unless-stopped
 
-    # Run the gateway directly — skips s6's multi-service mode (interactive CLI + dashboard)
-    # which exits immediately with "Warning: Input is not a terminal (fd=0)" and kills everything.
-    command: gateway run
-
     environment:
       - HERMES_UID=${HERMES_UID:-1000}
       - HERMES_GID=${HERMES_GID:-1000}
