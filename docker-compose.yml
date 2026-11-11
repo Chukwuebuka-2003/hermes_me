@@ -16,8 +16,6 @@ services:
     volumes:
       # Persistent storage: memories, sessions, skills
       - ./data:/opt/data
-      # Pre-configured model provider so hermes setup is not required
-      - ./config.yaml:/opt/data/config.yaml:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
