@@ -17,8 +17,9 @@ services:
       - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS}
 
     volumes:
-      # Persistent storage: memories, sessions, skills, and config written by hermes setup
-      - ./data:/opt/data
+      # Persistent storage: memories, sessions, skills, and config written by hermes setup.
+      # Docker-managed named volume so the host bind path cannot go missing/empty.
+      - hermes-data:/opt/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
@@ -33,3 +34,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  # Managed by Docker/Dokploy — do not bind to a host path.
+  hermes-data:
