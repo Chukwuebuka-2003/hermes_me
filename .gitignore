@@ -2,7 +2,7 @@
 .env
 *.env.local
 
-# Hermes runtime data and 5GB disk images
+# Hermes runtime data and disk images (config.yaml is committed intentionally)
 data/
 *.img
 hermes_data_5g.img

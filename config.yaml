@@ -1,0 +1,11 @@
+model:
+  provider: openrouter
+  default: openrouter/auto
+  api_mode: chat_completions
+  base_url: ""
+
+gateway:
+  platforms:
+    telegram:
+      dm_policy: open
+      group_policy: closed

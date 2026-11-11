@@ -4,7 +4,10 @@ services:
     container_name: hermes-telegram-agent
     restart: unless-stopped
 
-    # User mapping to ensure persistent files stay editable on host
+    # Run the gateway directly — skips s6's multi-service mode (interactive CLI + dashboard)
+    # which exits immediately with "Warning: Input is not a terminal (fd=0)" and kills everything.
+    command: gateway run
+
     environment:
       - HERMES_UID=${HERMES_UID:-1000}
       - HERMES_GID=${HERMES_GID:-1000}
@@ -15,24 +18,19 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 
     volumes:
-      # Persistent storage: configuration, memories, sessions, and custom skills
+      # Persistent storage: memories, sessions, skills
       - ./data:/opt/data
+      # Pre-configured model provider so hermes setup is not required
+      - ./config.yaml:/opt/data/config.yaml:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
-    # Telegram uses outbound HTTPS long-polling to api.telegram.org.
-    # No incoming ports need to be exposed on your Hetzner VPS firewall!
-    # ports:
-    #   - "127.0.0.1:8642:8642" # Optional local OpenAI-compatible API
-
-
-    # Memory limit to prevent Out-Of-Memory crashes on VPS
+    # Telegram uses outbound HTTPS long-polling — no inbound ports needed
     deploy:
       resources:
         limits:
           memory: 4096M
 
-    # Prevent logs from filling up your VPS disk
     logging:
       driver: "json-file"
       options:
