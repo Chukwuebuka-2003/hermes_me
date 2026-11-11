@@ -1,0 +1,44 @@
+# ==============================================================================
+# Caddyfile - Automated HTTPS & Reverse Proxy for Hermes Agent
+# Used when COMPOSE_PROFILES=caddy is enabled in your .env
+# ==============================================================================
+
+{$HERMES_DOMAIN:localhost} {
+    email {$CADDY_LETSENCRYPT_EMAIL:internal}
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Route API Gateway (port 8642)
+    # The API server requires the Authorization: Bearer <API_SERVER_KEY> header
+    handle /v1/* {
+        reverse_proxy hermes:8642
+    }
+
+    # Route Dashboard (port 9119)
+    # Protected by HTTP Basic Auth if hash is provided
+    handle {
+        @needAuth {
+            not expression `{$DASHBOARD_BASIC_AUTH_HASH} == ""`
+        }
+        basic_auth @needAuth {
+            {$DASHBOARD_BASIC_AUTH_USER:admin} {$DASHBOARD_BASIC_AUTH_HASH}
+        }
+
+        reverse_proxy hermes:9119
+    }
+
+    # Compression
+    encode gzip zstd
+
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}

@@ -1,0 +1,12 @@
+# Environment secrets & local config
+.env
+*.env.local
+
+# Hermes runtime data and 5GB disk images
+data/
+*.img
+hermes_data_5g.img
+
+# Operating System files
+.DS_Store
+Thumbs.db
