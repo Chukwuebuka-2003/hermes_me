@@ -35,9 +35,6 @@ services:
     # ports:
     #   - "127.0.0.1:8642:8642" # Optional local OpenAI-compatible API
 
-    # Limit container writable storage layer to 5GB
-    storage_opt:
-      size: "5G"
 
     # Memory limit to prevent Out-Of-Memory crashes on VPS
     deploy:

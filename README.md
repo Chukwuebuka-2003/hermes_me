@@ -10,7 +10,6 @@ Everything runs from a single `docker-compose.yml` file.
 
 - No open incoming ports: Telegram connects using outbound long-polling to `api.telegram.org`. You do not need to open any ports (HTTP/HTTPS/8642) in your Hetzner Cloud firewall or UFW.
 - User authorization: Restricted via `TELEGRAM_ALLOWED_USERS` so only your Telegram account can interact with the agent.
-- 5GB storage limit: Container rootfs is capped at 5GB (`storage_opt: size: 5G`).
 - Log rotation: Prevent logs from exhausting disk space (`max-size: 10m`, `max-file: 3`).
 - Memory limit: Capped at 4096MB to protect small VPS instances.
 
