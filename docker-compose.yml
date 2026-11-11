@@ -8,21 +8,11 @@ services:
     environment:
       - HERMES_UID=${HERMES_UID:-1000}
       - HERMES_GID=${HERMES_GID:-1000}
-
-      # ------------------------------------------------------------------------
-      # Telegram Bot Configuration
-      # 1. Create a bot with @BotFather on Telegram to get your token.
-      # 2. Get your numeric ID from @userinfobot to restrict access to yourself.
-      # ------------------------------------------------------------------------
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-your_telegram_bot_token_here}
-      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS:-your_numeric_telegram_user_id}
-
-      # ------------------------------------------------------------------------
-      # LLM Provider Keys (fill at least one)
-      # ------------------------------------------------------------------------
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 
     volumes:
       # Persistent storage: configuration, memories, sessions, and custom skills
