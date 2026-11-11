@@ -1,87 +1,53 @@
 services:
   hermes:
-    image: nousresearch/hermes-agent:${HERMES_IMAGE_TAG:-latest}
-    container_name: hermes-agent
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes-telegram-agent
     restart: unless-stopped
-    # Use default entrypoint (/init) so s6-overlay properly supervises services
+
+    # User mapping to ensure persistent files stay editable on host
     environment:
-      # Map container user to host UID/GID to keep data permissions intact
       - HERMES_UID=${HERMES_UID:-1000}
       - HERMES_GID=${HERMES_GID:-1000}
-      # API Server configuration
-      - API_SERVER_HOST=0.0.0.0
-      - API_SERVER_KEY=${API_SERVER_KEY:-}
-      # LLM API Keys (optional if set interactively during setup)
+
+      # ------------------------------------------------------------------------
+      # Telegram Bot Configuration
+      # 1. Create a bot with @BotFather on Telegram to get your token.
+      # 2. Get your numeric ID from @userinfobot to restrict access to yourself.
+      # ------------------------------------------------------------------------
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-your_telegram_bot_token_here}
+      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS:-your_numeric_telegram_user_id}
+
+      # ------------------------------------------------------------------------
+      # LLM Provider Keys (fill at least one)
+      # ------------------------------------------------------------------------
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      # Bot tokens (Telegram, Discord, Slack)
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN:-}
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
-      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN:-}
+
     volumes:
-      # Persistent configuration, memories, skills, and session database
+      # Persistent storage: configuration, memories, sessions, and custom skills
       - ./data:/opt/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      # Binds to 127.0.0.1 by default for Hetzner security (safe from public internet scans)
-      # Access via SSH tunnel or reverse proxy (Caddy/Nginx)
-      - "127.0.0.1:8642:8642" # OpenAI-compatible API gateway
-      - "127.0.0.1:9119:9119" # Web Dashboard
-    networks:
-      - hermes-net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    # Limit writable container layer to 5GB (supported by Docker with overlay2 quota)
+
+    # Telegram uses outbound HTTPS long-polling to api.telegram.org.
+    # No incoming ports need to be exposed on your Hetzner VPS firewall!
+    # ports:
+    #   - "127.0.0.1:8642:8642" # Optional local OpenAI-compatible API
+
+    # Limit container writable storage layer to 5GB
     storage_opt:
       size: "5G"
-    # Basic resource limits to avoid OOM on smaller Hetzner cloud tiers (e.g. CX22/CPX21)
+
+    # Memory limit to prevent Out-Of-Memory crashes on VPS
     deploy:
       resources:
         limits:
           memory: 4096M
 
-  # Optional reverse proxy: Automatically issues SSL certs & proxies your domain to Hermes
-  # Activate by running: docker compose --profile caddy up -d
-  # (or by adding COMPOSE_PROFILES=caddy to your .env)
-  caddy:
-    image: caddy:2.8-alpine
-    container_name: hermes-caddy
-    restart: unless-stopped
-    profiles:
-      - caddy
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp" # HTTP/3
-    environment:
-      - HERMES_DOMAIN=${HERMES_DOMAIN:-localhost}
-      - CADDY_LETSENCRYPT_EMAIL=${CADDY_LETSENCRYPT_EMAIL:-}
-      - DASHBOARD_BASIC_AUTH_USER=${DASHBOARD_BASIC_AUTH_USER:-admin}
-      - DASHBOARD_BASIC_AUTH_HASH=${DASHBOARD_BASIC_AUTH_HASH:-}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - hermes-net
+    # Prevent logs from filling up your VPS disk
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    depends_on:
-      - hermes
-
-networks:
-  hermes-net:
-    driver: bridge
-
-volumes:
-  caddy_data:
-  caddy_config:
