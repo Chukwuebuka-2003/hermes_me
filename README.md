@@ -6,7 +6,7 @@ This repository contains an optimized, production-hardened Docker Compose config
 
 ---
 
-## 🔒 Security Best Practices for Hetzner Cloud
+## Security Best Practices for Hetzner Cloud
 
 Hetzner VPS instances assign public IPv4 and IPv6 addresses directly to your network interface without a hardware firewall by default.
 
@@ -21,7 +21,7 @@ This Docker Compose configuration enforces:
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. VPS Host Preparation
 
@@ -130,7 +130,7 @@ If you have a domain pointing to your Hetzner VPS IP and want direct HTTPS acces
 
 ---
 
-## 🛠️ Management & Common Commands
+## Management & Common Commands
 
 - **View Live Logs**:
   ```bash
@@ -160,7 +160,7 @@ If you have a domain pointing to your Hetzner VPS IP and want direct HTTPS acces
 
 ---
 
-## 💬 Chat Integrations (Telegram / Discord / Slack)
+## Chat Integrations (Telegram / Discord / Slack)
 
 You can connect Hermes to messaging apps by providing the bot tokens in your `.env`:
 - `TELEGRAM_BOT_TOKEN`
